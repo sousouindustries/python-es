@@ -13,12 +13,14 @@ class EventPublisher:
     """
     _handlers = collections.defaultdict(list)
     MissingEventHandler = type('MissingEventHandler', (LookupError,), {})
+    VersionMismatch = type('VersionMismatch', (Exception,), {})
 
     def __init__(self):
         self._events = {}
 
     def publish(self, aggregate, state, event, replay=False, version=None):
         """Publishes an event within the scope of the given `aggregate`."""
+        current_version = state.get_version()
         handlers = self._handlers[type(event)]
         if not handlers:
             warnings.warn("No handlers found for " + type(event).__name__)
@@ -26,6 +28,17 @@ class EventPublisher:
         for handler in handlers:
             handler(aggregate, aggregate._state, type(event), event)
             state.increment_version()
+
+            # If the `version` parameter was provided, this means that events
+            # are being replayed. The provided version must match the aggregates
+            # previous version.
+            if (version is not None) and (version != current_version):
+                raise self.VersionMismatch
+
+        # If not replaying, add the event to the uncommitted list, indicating
+        # that it has to be persisted to the data store.
+        if not replay:
+            state.put_event(current_version, event)
 
     def add_handler(self, func, event_classes):
         """Registers a handler function for a list of :class:`Event`

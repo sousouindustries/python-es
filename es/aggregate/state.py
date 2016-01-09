@@ -11,6 +11,32 @@ class AggregateState:
         self.__uncommitted = []
         self.__invalid = False
 
+    def pop(self):
+        """Return the first uncommitted event and removed it
+        from the list.
+        """
+        return self.__uncommitted.pop(0)
+
+    def is_dirty(self):
+        """Return a boolean indicating if there are uncommitted
+        events.
+        """
+        return bool(self.__uncommitted)
+
+    def get_version(self):
+        return self.__version
+
+    def put_event(self, version, event):
+        """Put an event in the uncommitted list.
+
+        Args:
+            version: the version of the aggregate that produced
+                the event.
+            event: the :class:`es.Event` instance.
+        """
+        assert version not in self.__uncommitted
+        self.__uncommitted.append((version, event))
+
     def is_valid(self):
         """Return a boolean indicating if the state is valid."""
         return not self.__invalid
