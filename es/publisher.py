@@ -84,7 +84,7 @@ def publishes(func):
     def f(self, *args, **kwargs):
         if not self._state.is_valid():
             raise self.InvalidState
-        for event in func(self, self._state, *args, **kwargs):
+        for event in func(self, *args, **kwargs):
             if not event:
                 continue
             try:
