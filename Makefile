@@ -19,3 +19,8 @@ links:
 
 purge:
 	rm -rf $(PYTHON3_LIB_DIR)/$(PYTHON3_MODULE_NAME)
+
+
+install-development-deps:
+	apt-get install python3-pip
+	pip3 install coverage nose marshmallow libsousou
