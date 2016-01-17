@@ -12,8 +12,13 @@ class AggregateMeta(type):
         if name == 'Aggregate':
             return super_new(cls, name, bases, attrs)
 
-        attrs['_publisher'] = publisher = EventPublisher()
-        attrs['_meta'] = meta = AggregateOptions(attrs.pop('Meta', None))
+        module = attrs.pop('__module__')
+        publisher = EventPublisher()
+        meta = AggregateOptions(attrs.pop('Meta', None))
+        new_class = super_new(cls, name, bases, {'__module__': module})
+        new_class.add_to_class('_meta', meta)
+        new_class.add_to_class('_publisher', publisher)
+        
         for attname, value in list(attrs.items()):
             if issubclass(type(value), Field):
                 meta.add_field(attname, value)
@@ -23,7 +28,10 @@ class AggregateMeta(type):
                 value.add_to_publisher(publisher)
                 del attrs[attname]
 
-        return super_new(cls, name, bases, attrs)
+        for attname, value in attrs.items():
+            new_class.add_to_class(attname, value)
+
+        return new_class
 
     def add_to_class(self, attname, value):
         if hasattr(value, 'contribute_to_class'):

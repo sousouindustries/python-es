@@ -1,10 +1,15 @@
 import uuid
 
+from libsousou.meta import hybrid_property
 from es.aggregate.meta import AggregateMeta
 from es.aggregate.state import AggregateState
 
 
 class Aggregate(metaclass=AggregateMeta):
+
+    @hybrid_property
+    def aggregate_type(cls):
+        return cls._meta.aggregate_type
 
     @property
     def aggregate_id(self):
