@@ -17,9 +17,6 @@ Relation = declarative_base()
 class Source(Relation):
     """Maps the ``sources`` table to a Python object."""
     __tablename__ = 'sources'
-    __table_args__ = {
-        'schema': 'events'
-    }
 
     aggregate_type = Column(String,
         nullable=False,
@@ -56,9 +53,6 @@ class Source(Relation):
 class Event(Relation):
     """Represents an incoming event."""
     __tablename__ = 'events'
-    __table_args__ = {
-        'schema': 'events'
-    }
 
     aggregate_id = Column(ForeignKey(Source.aggregate_id),
         primary_key=True,
@@ -68,13 +62,6 @@ class Event(Relation):
     version = Column(Integer,
         primary_key=True,
         name='version'
-    )
-
-    event_id = Column(BigInteger,
-        nullable=False,
-        unique=True,
-        server_default=func.nextval('mds_event_id_seq'),
-        name='event_id'
     )
 
     event_type = Column(String,
@@ -95,29 +82,7 @@ class Event(Relation):
         name='dispatched'
     )
 
-    #: The user that triggered the event.
-    user_id = Column(BigInteger,
-        nullable=False,
-        default=1,
-        server_default='1',
-        name='user_id'
-    )
-
-    #: The service through which :attr:`user_id` triggered the event.
-    service_id = Column(BigInteger,
-        nullable=False,
-        default=1,
-        server_default='1',
-        name='service_id'
-    )
-
     params = Column(JSONB,
         nullable=False,
         name='parameters'
-    )
-
-    meta = Column(JSONB,
-        nullable=False,
-        server_default="{}",
-        name='meta'
     )
