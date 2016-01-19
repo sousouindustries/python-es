@@ -20,6 +20,6 @@ class EventMeta(type):
                 fields[attname] = attrs.pop(attname)
 
         attrs['_adapter_class'] = type(name + 'Adapter', (Adapter,), fields)
-        attrs['_adapter'] = attrs['_adapter_class']()
+        attrs['_adapter'] = attrs['_adapter_class'](strict=True)
 
         return super_new(cls, name, bases, attrs)

@@ -12,7 +12,7 @@ class Event(metaclass=EventMeta):
         return (cls if inspect.isclass(cls) else type(cls)).__name__
 
     def __init__(self, **params):
-        self._data = params
+        self._data, errors = self._adapter.load(params)
 
     def __getattr__(self, attname):
         try:

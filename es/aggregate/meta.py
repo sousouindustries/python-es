@@ -16,7 +16,6 @@ class AggregateMeta(type):
         publisher = EventPublisher()
         meta = AggregateOptions(attrs.pop('Meta', None))
         new_class = super_new(cls, name, bases, {'__module__': module})
-        new_class.add_to_class('_meta', meta)
         new_class.add_to_class('_publisher', publisher)
         
         for attname, value in list(attrs.items()):
@@ -28,6 +27,8 @@ class AggregateMeta(type):
                 value.add_to_publisher(publisher)
                 del attrs[attname]
 
+        assert meta.base_fields, meta.base_fields
+        new_class.add_to_class('_meta', meta)
         for attname, value in attrs.items():
             new_class.add_to_class(attname, value)
 

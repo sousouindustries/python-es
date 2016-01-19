@@ -19,6 +19,12 @@ class Aggregate(metaclass=AggregateMeta):
         self._state = AggregateState(self, self._meta)
         self._id = aggregate_id or uuid.uuid4().hex
 
+    def dump(self):
+        """Serializes the current state of the aggregate as a Python
+        dictionary.
+        """
+        return self._meta.dump(self._state)
+
     def apply_event(self, event, replay=False, version=None):
         """Applies an event to the :class:`Aggregate`."""
         self._publisher.publish(self, self._state, event,
