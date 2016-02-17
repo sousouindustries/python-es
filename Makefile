@@ -4,6 +4,9 @@ PYTHON3_LIB_DIR ="/usr/lib/python3/dist-packages"
 PYTHON3_MODULE_NAME=es
 
 
+default:
+
+
 clean:
 	find . | grep -E "(__pycache__|\.pyc$\)" | xargs rm -rf
 	rm -rf dist build
@@ -21,6 +24,6 @@ purge:
 	rm -rf $(PYTHON3_LIB_DIR)/$(PYTHON3_MODULE_NAME)
 
 
-install-development-deps:
-	apt-get install python3-pip
-	pip3 install coverage nose marshmallow libsousou
+devpackage:
+	dpkg-buildpackage -rfakeroot -us -uc -b
+	rm -rf $(CWD)/debian/python3-es
